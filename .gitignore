@@ -24,4 +24,8 @@ vite.config.ts.timestamp-*
 
 *.txt
 
-obj/
+# Build directories
+backend/bin/
+backend/obj/
+
+*.sln
