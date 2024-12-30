@@ -70,6 +70,41 @@ public class EncounterPreviewController : ControllerBase
             return StatusCode(500, "Internal server error: " + ex.Message); // Handle errors
         }
     }
+    public class BossRecordResult
+{
+    public string BossName { get; set; }
+    public int BestDPS { get; set; }
+}
+
+        // GET: api/EncounterPreview/getRecords
+    [HttpGet("getRecords")]
+    public async Task<ActionResult<IEnumerable<EncounterPreview>>> GetPlayerRecords(string localPlayer)
+    {
+        try
+        {
+            // Using LINQ with Where() to filter by name
+            var encounterPreviews = await _context.EncounterPreviews
+                .Where(e => e.local_player == localPlayer && e.cleared == true)
+                .GroupBy(b => b.current_boss)
+                .Select(g => new BossRecordResult 
+                {
+                    BossName = g.Key,
+                    BestDPS = (int)g.Max(b => b.my_dps)
+                })
+                .ToListAsync(); // Execute the query asynchronously
+
+            if (encounterPreviews == null || encounterPreviews.Count == 0)
+            {
+                return NotFound(); // Return 404 if no encounter previews are found
+            }
+
+            return Ok(encounterPreviews); // Return the list of matching encounter previews
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Internal server error: " + ex.Message); // Handle errors
+        }
+    }
     // GET: api/EncounterPreview?localPlayer=JohnDoe&currentBoss=Dragon
     [HttpGet("boss")]
     public async Task<ActionResult<IEnumerable<EncounterPreview>>> GetBoss([FromQuery] string localPlayer, [FromQuery] string currentBoss)
