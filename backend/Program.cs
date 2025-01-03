@@ -9,6 +9,17 @@ builder.Services.AddDbContext<EncounterPreviewContext>(options =>
 
 builder.Services.AddControllers();
 
+// Add CORS services
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAnyOrigin", policy =>
+    {
+        policy.AllowAnyOrigin()  // Allow any origin (cross-origin requests)
+              .AllowAnyHeader()  // Allow any headers
+              .AllowAnyMethod(); // Allow any HTTP method (GET, POST, PUT, etc.)
+    });
+});
+
 // Add Swagger services
 builder.Services.AddSwaggerGen(c =>
 {
@@ -32,7 +43,11 @@ if (app.Environment.IsDevelopment())
     app.UseDeveloperExceptionPage();
 }
 
+// Enable CORS for the entire application
+app.UseCors("AllowAnyOrigin");
+
 app.UseHttpsRedirection();
+
 app.MapControllers();
 
 app.Run();
