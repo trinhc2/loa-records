@@ -2,32 +2,34 @@
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { guardianList } from '$lib/guardians';
 	import { encounterMap } from '$lib/bosses';
-	import { onMount} from 'svelte'
+	import { onMount } from 'svelte';
+
+	const backend = 'http://localhost:5163'
 
 	interface Boss {
-    bossName: string;
-    bestDPS: number;
-  }
-	let records: Boss[] = []
+		bossName: string;
+		bestDPS: number;
+	}
+	let records: Boss[] = [];
 
 	async function getRecords() {
-		const response = await fetch('http://localhost:5163/api/EncounterPreview/getRecords?localPlayer=Azenna');
+		const response = await fetch(
+			backend + '/api/EncounterPreview/getRecords?localPlayer=Azenna'
+		);
 		if (response.ok) {
-			records = await response.json()
-			console.log("test", records)
+			records = await response.json();
 		} else {
-			console.error('failed to fetch player records')
+			console.error('failed to fetch player records');
 		}
 	}
 
-  onMount(() => {
-    getRecords();
-  });
+	onMount(() => {
+		getRecords();
+	});
 </script>
 
 <Accordion>
 	<AccordionItem>
-		<svelte:fragment slot="lead">(icon)</svelte:fragment>
 		<svelte:fragment slot="summary">Raids</svelte:fragment>
 		<svelte:fragment slot="content">
 			<table class="min-w-full table-auto border-collapse">
@@ -44,8 +46,7 @@
 							<tr>
 								<td class="border-b px-4 py-2">{raidName} Gate {i + 1}: {encounter}</td>
 								{#if matched}
-									<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.bestDPS)}</td
-									>
+									<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.bestDPS)}</td>
 								{:else}
 									<td class="border-b px-4 py-2">No Data</td>
 								{/if}
@@ -60,7 +61,6 @@
 
 <Accordion>
 	<AccordionItem>
-		<svelte:fragment slot="lead">(icon)</svelte:fragment>
 		<svelte:fragment slot="summary">Guardians</svelte:fragment>
 		<svelte:fragment slot="content">
 			<table class="min-w-full table-auto border-collapse">
