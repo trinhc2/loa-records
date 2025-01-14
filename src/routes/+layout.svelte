@@ -1,9 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { AppBar } from '@skeletonlabs/skeleton';
-	import { initializeStores, Drawer } from '@skeletonlabs/skeleton';
-	import { getDrawerStore } from '@skeletonlabs/skeleton';
-	import { HomeIcon, SettingsIcon, FileTextIcon } from 'svelte-feather-icons';
+	import { SettingsIcon, FileTextIcon } from 'svelte-feather-icons';
 
 	let { children } = $props();
 </script>
@@ -12,29 +10,25 @@
 	<AppBar gridColumns="grid-cols-3" slotDefault="place-self-center" slotTrail="place-content-end">
 		<svelte:fragment slot="lead">
 			<div class="flex gap-3">
-				<button>
-					<div class="flex items-center justify-between gap-2">
-						<HomeIcon />
-						Home
-					</div>
-				</button>
-				<button>
+				<a type="button" class="appBarButton" href="/">
 					<div class="flex items-center justify-between gap-2">
 						<FileTextIcon />
 						Records
 					</div>
-				</button>
+				</a>
 			</div>
 		</svelte:fragment>
 		<svelte:fragment slot="trail">
-			<button>
+			<a type="button" class="appBarButton" href="/settings">
 				<div class="flex items-center justify-between gap-2">
 					<SettingsIcon />
 					Settings
 				</div>
-			</button>
+			</a>
 		</svelte:fragment>
 	</AppBar>
 </div>
 
-{@render children()}
+<div class="m-3">
+	{@render children()}
+</div>

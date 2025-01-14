@@ -1,3 +1,9 @@
 @import 'tailwindcss/base';
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
+
+@layer components {
+    .appBarButton {
+      @apply btn hover:text-blue-500 transition-colors duration-300 p-0;
+    }
+  }
