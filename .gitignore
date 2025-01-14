@@ -29,3 +29,5 @@ backend/bin/
 backend/obj/
 
 *.sln
+
+settings.json
