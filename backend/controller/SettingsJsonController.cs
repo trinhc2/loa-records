@@ -24,7 +24,7 @@ public class SettingsController : ControllerBase
             _jsonFilePath = Path.Combine(parentDirectory.FullName, "settings.json");
         }
 
-    // GET: api/json
+    // GET: api/settings/getFolderLocation
     [HttpGet("getFolderLocation")]
     public async Task<IActionResult> GetJson()
     {
@@ -45,7 +45,7 @@ public class SettingsController : ControllerBase
         }
     }
 
-    // POST: api/json
+    // POST: api/settings/setFolderLocation
     [HttpPost("setFolderLocation")]
     public async Task<IActionResult> SaveJson([FromBody] JsonData jsonData)
     {
