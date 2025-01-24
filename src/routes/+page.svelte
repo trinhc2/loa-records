@@ -1,30 +1,27 @@
 <script lang="ts">
 	import { Accordion, AccordionItem } from '@skeletonlabs/skeleton';
 	import { guardianList } from '$lib/guardians';
-	import { encounterMap } from '$lib/bosses';
+	import { bossList } from '$lib/bosses';
 	import { onMount } from 'svelte';
+	import { invoke } from '@tauri-apps/api/core';
 	
 	interface Boss {
-		bossName: string;
-		bestDPS: number;
+		boss_name: string;
+		best_dps: number;
 	}
-	const backend = 'http://localhost:5163'
 
 	let records: Boss[] = [];
 
-	async function getRecords() {
-		const response = await fetch(
-			backend + '/api/EncounterPreview/getRecords?localPlayer=Azenna'
-		);
-		if (response.ok) {
-			records = await response.json();
-		} else {
-			console.error('failed to fetch player records');
-		}
-	}
+	async function getEncounterData(localPlayer: String) {
+    try {
+      records = await invoke('get_encounter_previews', { localPlayer });
+    } catch (error) {
+      console.error("Error querying database:", error);
+    }
+  }
 
 	onMount(() => {
-		getRecords();
+		getEncounterData('Azenna');
 	});
 </script>
 
@@ -51,13 +48,13 @@
 						</tr>
 					</thead>
 					<tbody>
-						{#each Object.entries(encounterMap).reverse() as [raidName, encounters]}
+						{#each Object.entries(bossList).reverse() as [raidName, encounters]}
 							{#each encounters as encounter, i}
-								{@const matched = records.find((boss) => boss.bossName === encounter)}
+								{@const matched = records.find((boss) => boss.boss_name === encounter)}
 								<tr>
 									<td class="border-b px-4 py-2">{raidName} Gate {i + 1}: {encounter}</td>
 									{#if matched}
-										<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.bestDPS)}</td>
+										<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.best_dps)}</td>
 									{:else}
 										<td class="border-b px-4 py-2">No Data</td>
 									{/if}
@@ -83,11 +80,11 @@
 					</thead>
 					<tbody>
 						{#each guardianList as guardian}
-							{@const matched = records.find((boss) => boss.bossName === guardian)}
+							{@const matched = records.find((boss) => boss.boss_name === guardian)}
 							<tr>
 								<td class="border-b px-4 py-2">{guardian}</td>
 								{#if matched}
-									<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.bestDPS)}</td>
+									<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.best_dps)}</td>
 								{:else}
 									<td class="border-b px-4 py-2">No Data</td>
 								{/if}

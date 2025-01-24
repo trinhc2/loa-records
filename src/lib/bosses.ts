@@ -1,4 +1,4 @@
-export const encounterMap: { [key: string]: Array<string> } = {
+export const bossList: { [key: string]: Array<string> } = {
     Valtan: ["Dark Mountain Predator", "Ravaged Tyrant of Beasts"],
     Vykas: ["Covetous Devourer Vykas", "Covetous Legion Commander Vykas"],
     Clown: ["Saydon", "Kakul", "Encore-Desiring Kakul-Saydon"],
