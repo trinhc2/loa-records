@@ -1,43 +1,39 @@
 <script lang="ts">
     import { onMount } from 'svelte';
+    import { invoke } from '@tauri-apps/api/core';
 
-    let folderLocation: string = '';
+    interface Settings {
+      logsFileLocation : String
+    }
+
     let inputText: string = '';
 
-    const backend = 'http://localhost:5163'
 
-    async function getFolderLocation() {
-        const response = await fetch(backend + '/api/Settings/getFolderLocation')
-        if (response.ok) {
-            const data = await response.json()
-            folderLocation = data.logsFolderLocation || '';
-            inputText = folderLocation
-        }
+async function createSettingsFile() {
+    try {
+      const result =await invoke('create_settings_file', { folder: inputText })
+      console.log(result); // Log the result, or you can display a success message
+    } catch (error) {
+      console.error('Error creating settings file:', error);
     }
+  }
 
-    async function setFolderLocation() {
-        const response = await fetch(backend + '/api/Settings/setFolderLocation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ LogsFolderLocation: inputText }),
-    });
-
-    if (response.ok) {
-      console.log('Updated JSON');
-    } else {
-      console.error('Failed to save JSON');
+	async function getSettings() {
+    try {
+      const result = await invoke('read_settings');
+      console.log(result)
+    } catch (error) {
+      console.error("Error querying database:", error);
     }
+  }
 
-    }
     onMount(() => {
-		getFolderLocation();
+      getSettings()
 	});
 </script>
 
 <div>
     Settings Page
     <input bind:value={inputText} class="input p-2" title="Input (text)" type="text" placeholder="Set LOA Logs location" />
-    <button on:click={setFolderLocation} class="btn">Set</button>
+    <button on:click={createSettingsFile} class="btn">Set</button>
 </div>

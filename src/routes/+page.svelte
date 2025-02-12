@@ -4,6 +4,9 @@
 	import { bossList } from '$lib/bosses';
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
+	import { writable } from 'svelte/store';
+
+	export const folderLocation = writable('')
 	
 	interface Boss {
 		boss_name: string;
@@ -20,8 +23,21 @@
     }
   }
 
+  async function getFolderLocation() {
+	try {
+		const location: string = await invoke('read_settings');
+		folderLocation.set(location);
+	} catch (error) {
+		console.error("error getting folder location:", error)
+	}
+  }
+
 	onMount(() => {
-		getEncounterData('Azenna');
+		getFolderLocation()	
+			.then(() => {
+				console.log("folder location retreived")
+				getEncounterData("Azenna")
+			})	
 	});
 </script>
 
