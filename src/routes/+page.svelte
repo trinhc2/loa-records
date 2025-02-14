@@ -6,51 +6,92 @@
 	import { invoke } from '@tauri-apps/api/core';
 	import { writable } from 'svelte/store';
 
-	export const folderLocation = writable('')
-	
+	export const logsFolderLocation = writable('');
+
 	interface Boss {
 		boss_name: string;
 		best_dps: number;
 	}
 
+	interface Player {
+		name: String;
+		count: Number;
+	}
+
+	interface PlayerData {
+		clientId: string;
+		localPlayers: {
+			[playerId: string]: Player;
+		};
+	}
+
+	interface FolderLocation {
+		logsFolderLocation: string;
+	}
+
 	let records: Boss[] = [];
+	let localPlayers: String[] = [];
+	let selectedPlayer: String = '';
+	let validFolderPath = false;
 
 	async function getEncounterData(localPlayer: String) {
-    try {
-      records = await invoke('get_encounter_previews', { localPlayer });
-    } catch (error) {
-      console.error("Error querying database:", error);
-    }
-  }
-
-  async function getFolderLocation() {
-	try {
-		const location: string = await invoke('read_settings');
-		folderLocation.set(location);
-	} catch (error) {
-		console.error("error getting folder location:", error)
+		try {
+			records = await invoke('get_encounter_previews', { localPlayer });
+		} catch (error) {
+			console.error('Error querying database:', error);
+		}
 	}
-  }
+
+	async function getFolderLocation() {
+		try {
+			const location: FolderLocation = await invoke('read_settings');
+			logsFolderLocation.set(location.logsFolderLocation);
+		} catch (error) {
+			console.error('error getting folder location:', error);
+		}
+	}
+
+	async function getLocalPlayers(filePath: String) {
+		try {
+			console.log('getlocalplayers call:', filePath);
+			const result: PlayerData = await invoke('read_local_players', { filePath });
+			validFolderPath = true;
+			console.log('result', result.localPlayers);
+			localPlayers = Object.values(result.localPlayers)
+				.sort((a, b) => +b.count - +a.count) // Sort by 'count' in descending order
+				.map((player) => player.name);
+			console.log(localPlayers);
+			selectedPlayer = localPlayers[0];
+		} catch (error) {
+			console.error('error reading local players:', error);
+		}
+	}
 
 	onMount(() => {
-		getFolderLocation()	
-			.then(() => {
-				console.log("folder location retreived")
-				getEncounterData("Azenna")
-			})	
+		getFolderLocation().then(() => {
+			console.log('folder location retreived', $logsFolderLocation);
+			getLocalPlayers($logsFolderLocation + '\\local_players.json').then(() =>
+				getEncounterData(localPlayers[0])
+			);
+		});
 	});
 </script>
 
 <div>
-	<select class="select">
-		<option value="1">Option 1</option>
-		<option value="2">Option 2</option>
-		<option value="3">Option 3</option>
-		<option value="4">Option 4</option>
-		<option value="5">Option 5</option>
+	{#if !validFolderPath}
+		<p>INVALID FOLDER PATH, PLEASE DOUBLE CHECK YOU SET LOGS FOLDER PATH IN SETTINGS</p>
+	{/if}
+	<select
+		bind:value={selectedPlayer}
+		onchange={() => getEncounterData(selectedPlayer)}
+		class="select"
+	>
+		{#each localPlayers as player}
+			<option value={player}>{player}</option>
+		{/each}
 	</select>
 
-	<hr class="!border-t-2 mt-3 mb-3" />
+	<hr class="mb-3 mt-3 !border-t-2" />
 
 	<Accordion>
 		<AccordionItem>
@@ -70,7 +111,9 @@
 								<tr>
 									<td class="border-b px-4 py-2">{raidName} Gate {i + 1}: {encounter}</td>
 									{#if matched}
-										<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.best_dps)}</td>
+										<td class="border-b px-4 py-2"
+											>{Intl.NumberFormat().format(matched.best_dps)}</td
+										>
 									{:else}
 										<td class="border-b px-4 py-2">No Data</td>
 									{/if}
@@ -82,7 +125,7 @@
 			</svelte:fragment>
 		</AccordionItem>
 	</Accordion>
-	
+
 	<Accordion>
 		<AccordionItem>
 			<svelte:fragment slot="summary">Guardians</svelte:fragment>
