@@ -4,9 +4,7 @@
 	import { bossList } from '$lib/bosses';
 	import { onMount } from 'svelte';
 	import { invoke } from '@tauri-apps/api/core';
-	import { writable } from 'svelte/store';
-
-	export const logsFolderLocation = writable('');
+	import { logsFolder } from '$lib/stores';
 
 	interface Boss {
 		boss_name: string;
@@ -46,7 +44,7 @@
 	async function getFolderLocation() {
 		try {
 			const location: FolderLocation = await invoke('read_settings');
-			logsFolderLocation.set(location.logsFolderLocation);
+			logsFolder.set(location.logsFolderLocation);
 		} catch (error) {
 			console.error('error getting folder location:', error);
 		}
@@ -69,13 +67,20 @@
 	}
 
 	onMount(() => {
-		console.log('writable', $logsFolderLocation);
-		getFolderLocation().then(() => {
-			console.log('folder location retreived', $logsFolderLocation);
-			getLocalPlayers($logsFolderLocation + '\\local_players.json').then(() =>
+		console.log('writable', $logsFolder);
+		if ($logsFolder && $logsFolder === '') {
+			getFolderLocation().then(() => {
+				console.log('folder location retreived', $logsFolder);
+				getLocalPlayers($logsFolder + '\\local_players.json').then(() =>
+					getEncounterData(localPlayers[0])
+				);
+			});
+		} else {
+			console.log("skipping get folder location")
+			getLocalPlayers($logsFolder + '\\local_players.json').then(() =>
 				getEncounterData(localPlayers[0])
 			);
-		});
+		}
 	});
 </script>
 
