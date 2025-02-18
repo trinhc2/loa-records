@@ -32,14 +32,8 @@ pub fn create_settings_file(folder: String) -> Result<String, String> {
     // Get the current working directory (the project folder)
     let project_dir = env::current_dir().map_err(|e| e.to_string())?;
 
-    // Get the parent directory of the current working directory
-    let parent_dir = project_dir.parent().ok_or("Failed to get parent directory")?;
-
     // Specify the path for the settings file in the parent directory
-    let settings_path = parent_dir.join("settings.json");
-
-    // Ensure the parent directory exists (in case it doesn't)
-    fs::create_dir_all(parent_dir).map_err(|e| e.to_string())?;
+    let settings_path = project_dir.join("settings.json");
 
     // Serialize the settings into JSON format
     let json_data = serde_json::to_string(&settings).map_err(|e| e.to_string())?;
@@ -53,12 +47,9 @@ pub fn create_settings_file(folder: String) -> Result<String, String> {
 pub fn read_settings_file() -> Result<Settings, String> {
     // Get the current working directory (the project folder)
     let project_dir = env::current_dir().map_err(|e| e.to_string())?;
-    
-    // Get the parent directory of the current working directory
-    let parent_dir = project_dir.parent().ok_or("Failed to get parent directory")?;
 
     // Specify the path for the settings file in the parent directory
-    let settings_path = parent_dir.join("settings.json");
+    let settings_path = project_dir.join("settings.json");
 
     // Read the content of the settings file
     let json_data = fs::read_to_string(settings_path).map_err(|e| e.to_string())?;
