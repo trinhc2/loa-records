@@ -11,6 +11,7 @@
 	interface Boss {
 		boss_name: string;
 		best_dps: number;
+		clears: number;
 	}
 
 	interface Player {
@@ -68,6 +69,7 @@
 	}
 
 	onMount(() => {
+		console.log('writable', $logsFolderLocation);
 		getFolderLocation().then(() => {
 			console.log('folder location retreived', $logsFolderLocation);
 			getLocalPlayers($logsFolderLocation + '\\local_players.json').then(() =>
@@ -102,6 +104,7 @@
 						<tr>
 							<th class="border-b px-4 py-2 text-left font-semibold">Boss Name</th>
 							<th class="border-b px-4 py-2 text-left font-semibold">Best DPS</th>
+							<th class="border-b px-4 py-2 text-left font-semibold">Clears</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -111,11 +114,15 @@
 								<tr>
 									<td class="border-b px-4 py-2">{raidName} Gate {i + 1}: {encounter}</td>
 									{#if matched}
-										<td class="border-b px-4 py-2"
-											>{Intl.NumberFormat().format(matched.best_dps)}</td
-										>
+										<td class="border-b px-4 py-2">
+											{Intl.NumberFormat().format(matched.best_dps)}
+										</td>
+										<td class="border-b px-4 py-2">
+											{matched.clears}
+										</td>
 									{:else}
 										<td class="border-b px-4 py-2">No Data</td>
+										<td class="border-b px-4 py-2">0</td>
 									{/if}
 								</tr>
 							{/each}
@@ -135,6 +142,7 @@
 						<tr>
 							<th class="border-b px-4 py-2 text-left font-semibold">Boss Name</th>
 							<th class="border-b px-4 py-2 text-left font-semibold">Best DPS</th>
+							<th class="border-b px-4 py-2 text-left font-semibold">Clears</th>
 						</tr>
 					</thead>
 					<tbody>
@@ -143,9 +151,15 @@
 							<tr>
 								<td class="border-b px-4 py-2">{guardian}</td>
 								{#if matched}
-									<td class="border-b px-4 py-2">{Intl.NumberFormat().format(matched.best_dps)}</td>
+									<td class="border-b px-4 py-2">
+										{Intl.NumberFormat().format(matched.best_dps)}
+									</td>
+									<td class="border-b px-4 py-2">
+										{matched.clears}
+									</td>
 								{:else}
 									<td class="border-b px-4 py-2">No Data</td>
+									<td class="border-b px-4 py-2">0</td>
 								{/if}
 							</tr>
 						{/each}
