@@ -9,5 +9,6 @@ export const bossList: { [key: string]: Array<string> } = {
     Thaemine: ["Killineza the Dark Worshipper", "Valinak, Herald of the End", "Thaemine the Lightqueller", "Darkness Legion Commander Thaemine"],
     Echidna: ["Red Doom Narkiel", "Covetous Master Echidna"],
     Behemoth: ["Behemoth, the Storm Commander", "Behemoth, Cruel Storm Slayer"],
-    Aegir: ["Akkan, Lord of Death", "Aegir, the Oppressor"]
+    Aegir: ["Akkan, Lord of Death", "Aegir, the Oppressor"],
+    "Brelshaza (Kazeros)": ["Narok the Butcher", "Phantom Manifester Brelshaza"],
 };

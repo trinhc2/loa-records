@@ -1,4 +1,5 @@
 export const guardianList = [
+    "Skolakia",
     "Argeos",
     "Veskal",
     "Gargadeth",
